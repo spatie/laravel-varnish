@@ -15,13 +15,12 @@ class TestCase extends Orchestra
 
     protected function setUpDummyRoutes()
     {
-        Route::get('cache-me', function() {
-           return 'cache me';
+        Route::get('cache-me', function () {
+            return 'cache me';
         });
 
-        Route::get('do-no-cache-me', function() {
+        Route::get('do-no-cache-me', function () {
             return 'do not cache me';
         });
-
     }
 }

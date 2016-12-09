@@ -27,20 +27,22 @@ class Varnish
      */
     protected function getHosts($hosts): array
     {
-        if (!is_array($hosts)) {
+        if (! is_array($hosts)) {
             $hosts = [$hosts];
         }
 
-        if (!count($hosts)) {
+        if (! count($hosts)) {
             $hosts = config('laravel-varnish.hosts');
+
             return $hosts;
         }
+
         return $hosts;
     }
 
     protected function generateFlushCommand(array $hosts): string
     {
-        if (!array($hosts)) {
+        if (! [$hosts]) {
             $hosts = [$hosts];
         }
 
@@ -64,12 +66,10 @@ class Varnish
 
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 
         return $process;
     }
-
-
 }
