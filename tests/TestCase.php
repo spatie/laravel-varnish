@@ -3,6 +3,7 @@
 namespace Spatie\Varnish\Test;
 
 use Orchestra\Testbench\TestCase as Orchestra;
+use Route;
 
 class TestCase extends Orchestra
 {
