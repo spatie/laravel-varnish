@@ -52,7 +52,9 @@ class Varnish
             })
             ->implode('|');
 
-        return "sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ {$hostsRegex}'";
+        $config = config('laravel-varnish');
+
+        return "sudo varnishadm -S {$config['secret']} -T 127.0.0.1:{$config['administrative_port']} 'ban req.http.host ~ {$hostsRegex}'";
     }
 
     /**
