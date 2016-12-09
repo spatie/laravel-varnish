@@ -7,7 +7,6 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/spatie/laravel-varnish.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/laravel-varnish)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-varnish.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-varnish)
 
-**Note:** Replace ```Freek Van der Herten``` ```freekmurze``` ```https://spatie.be``` ```freek@spatie.be``` ```laravel-varnish``` ```Integrate Varnish in a Laravel application``` with their correct values in [README.md](README.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md) and [composer.json](composer.json) files, then delete this line.
 
 This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
 
