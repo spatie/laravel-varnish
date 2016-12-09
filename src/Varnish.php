@@ -11,20 +11,34 @@ class Varnish
      *
      * @return \Symfony\Component\Process\Process
      */
-    public function flush($hosts)
+    public function flush($hosts = [])
     {
+        $hosts = $this->getHosts($hosts);
+
         $command = $this->generateFlushCommand($hosts);
 
         return $this->executeCommand($command);
-
     }
 
     /**
-     * @param string|array $hosts
+     * @param array|string $hosts
      *
-     * @return string
+     * @return array
      */
-    protected function generateFlushCommand($hosts): string
+    protected function getHosts($hosts): array
+    {
+        if (!is_array($hosts)) {
+            $hosts = [$hosts];
+        }
+
+        if (!count($hosts)) {
+            $hosts = config('laravel-varnish.hosts');
+            return $hosts;
+        }
+        return $hosts;
+    }
+
+    protected function generateFlushCommand(array $hosts): string
     {
         if (!array($hosts)) {
             $hosts = [$hosts];
@@ -56,4 +70,6 @@ class Varnish
 
         return $process;
     }
+
+
 }
