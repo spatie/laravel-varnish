@@ -1,6 +1,6 @@
 {
     "name": "spatie/laravel-varnish",
-    "description": "Integrate Varnish in a Laravel application",
+    "description": "Making Varnish and Laravel play nice together",
     "keywords": [
         "spatie",
         "laravel-varnish"
