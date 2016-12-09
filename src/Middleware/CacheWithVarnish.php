@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\Varnish\CacheWithVarnish;
+namespace App\Http\Middleware;
 
 use Closure;
 
@@ -10,8 +10,9 @@ class CacheWithVarnish
     {
         $response = $next($request);
 
-        $response->headers->set('X-Cacheable', 1);
-
-        return $response;
+        return $response->withHeaders([
+            'X-Cacheable' => '1',
+            'Cache-Control' => 'public, max-age=' . (60 * 10)
+        ]);
     }
 }
