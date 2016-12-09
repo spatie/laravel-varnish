@@ -1,9 +1,8 @@
 <?php
 
 return [
-    'hosts' => [
 
-    ],
+    'host' => 'example.com',
 
     'secret' => '/etc/varnish/secret',
 

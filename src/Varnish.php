@@ -7,37 +7,33 @@ use Symfony\Component\Process\Process;
 class Varnish
 {
     /**
-     * @param string|array $hosts
+     * @param string|array $host
      *
      * @return \Symfony\Component\Process\Process
      */
-    public function flush($hosts = [])
+    public function flush($host = null)
     {
-        $hosts = $this->getHosts($hosts);
+        $host = $this->getHosts($host);
 
-        $command = $this->generateFlushCommand($hosts);
+        $command = $this->generateFlushCommand($host);
 
         return $this->executeCommand($command);
     }
 
     /**
-     * @param array|string $hosts
+     * @param array|string $host
      *
      * @return array
      */
-    protected function getHosts($hosts): array
+    protected function getHosts($host = null): array
     {
-        if (! is_array($hosts)) {
-            $hosts = [$hosts];
+        $host = $host ?? config('laravel-varnish.hosts');
+
+        if (! is_array($host)) {
+            $host = [$host];
         }
 
-        if (! count($hosts)) {
-            $hosts = config('laravel-varnish.hosts');
-
-            return $hosts;
-        }
-
-        return $hosts;
+        return $host;
     }
 
     protected function generateFlushCommand(array $hosts): string
