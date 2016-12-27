@@ -143,10 +143,9 @@ varnish()->flush();
 
 There also an artisan command that you could come in handy in your deployment script.
 
-```php
+```bash
 php artisan varnish:flush
 ```
-
 
 ## Changelog
 
