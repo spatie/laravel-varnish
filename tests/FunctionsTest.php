@@ -2,8 +2,8 @@
 
 namespace Spatie\Varnish\Test;
 
-use PHPUnit_Framework_TestCase;
 use Spatie\Varnish\Varnish;
+use PHPUnit_Framework_TestCase;
 
 class FunctionsTest extends PHPUnit_Framework_TestCase
 {
