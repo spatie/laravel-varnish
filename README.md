@@ -38,12 +38,7 @@ First register the service provider and facade in your application.
 
 'providers' => [
     ...
-    'Spatie\PaginateRoute\PaginateRouteServiceProvider',
-];
-
-'aliases' => [
-    ...
-    'PaginateRoute' => 'Spatie\PaginateRoute\PaginateRouteFacade',
+    'Spatie\Varnish\VarnishServiceProvider',
 ];
 ```
 
