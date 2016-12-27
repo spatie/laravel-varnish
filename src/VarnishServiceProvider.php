@@ -2,8 +2,8 @@
 
 namespace Spatie\Varnish;
 
-use App\Console\Commands\FlushVarnishCache;
 use Illuminate\Support\ServiceProvider;
+use App\Console\Commands\FlushVarnishCache;
 
 class VarnishServiceProvider extends ServiceProvider
 {
@@ -14,14 +14,14 @@ class VarnishServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/laravel-varnish.php' => config_path('laravel-varnish.php'),
+                __DIR__.'/../config/laravel-varnish.php' => config_path('laravel-varnish.php'),
             ], 'config');
         }
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/laravel-uptime-monitor.php', 'laravel-uptime-monitor');
+        $this->mergeConfigFrom(__DIR__.'/../config/laravel-uptime-monitor.php', 'laravel-uptime-monitor');
 
         $this->app->bind('command.monitor:check-uptime', FlushVarnishCache::class);
 
@@ -29,5 +29,4 @@ class VarnishServiceProvider extends ServiceProvider
             'command.varnish:flush',
         ]);
     }
-
 }
