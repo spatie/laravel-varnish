@@ -2,6 +2,7 @@
 
 namespace Spatie\Varnish;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class Varnish
