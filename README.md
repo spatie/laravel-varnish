@@ -85,11 +85,10 @@ Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the registere
 ```php
 // app/Http/Kernel.php
 
+protected $routeMiddleware = [
 ...
-    protected $routeMiddleware = [
-    ...
-       'cacheable' => Spatie\Varnish\Middleware\CacheWithVarnish::class,
-    ];
+   'cacheable' => Spatie\Varnish\Middleware\CacheWithVarnish::class,
+]
 ```
 
 Finally, in you should add these lines to the `vcl_backend_reponse` function in your VCL:
