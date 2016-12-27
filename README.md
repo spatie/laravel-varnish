@@ -8,8 +8,7 @@
 [![StyleCI](https://styleci.io/repos/72834357/shield?branch=master)](https://styleci.io/repos/72834357)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-varnish.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-varnish)
 
-
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+This package provides an easy way to work with Varnish in Laravel. It provides a route middleware that, when applied to a route, will make sure Varnish will cache the response no matter what. The package also contains a function to flush the Varnish cache from within the application.
 
 Spatie is a webdesign agency based in Antwerp, Belgium. You'll find an overview of all our open source projects [on our website](https://spatie.be/opensource).
 
@@ -23,17 +22,113 @@ The best postcards will get published on the open source page on our website.
 
 ## Installation
 
+We assume that you've already installed Varnish on your server. If not read [this blogpost](https://murze.be/xxx) to learn how to install it.
+
+
 You can install the package via composer:
 
 ``` bash
 composer require spatie/laravel-varnish
 ```
 
+First register the service provider and facade in your application.
+
+```php
+// config/app.php
+
+'providers' => [
+    ...
+    'Spatie\PaginateRoute\PaginateRouteServiceProvider',
+];
+
+'aliases' => [
+    ...
+    'PaginateRoute' => 'Spatie\PaginateRoute\PaginateRouteFacade',
+];
+```
+
+Next you must publish the config-file with:
+
+```bash
+php artisan vendor:publish --provider="Spatie\Varnish\VarnishServiceProvider" --tag="config"
+```
+
+This is the contents of the published file:
+
+```php
+return [
+    /**
+     * The hostname this Laravel app is listening to.
+     */
+    'host' => 'example.com',
+
+    /**
+     * The location of the file containing the administrative password.
+     */
+    'secret' => '/etc/varnish/secret',
+
+    /**
+     * The port where the administrative tasks may be sent to.
+     */
+    'administrative_port' => 6082,
+
+    /**
+     * The default amount of minutes that content rendered using the `CacheWithVarnish`
+     * middleware should be cached.
+     */
+    'cache_time_in_minutes' => 60 * 24,
+];
+```
+
+Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the registered route middelwares:
+
+```php
+// app/Http/Kernel.php
+
+...
+    protected $routeMiddleware = [
+    ...
+       'cacheable' => Spatie\Varnish\Middleware\CacheWithVarnish::class,
+    ];
+```
+
+Finally, in you should add these lines to the `vcl_backend_reponse` function in your VCL:
+
+```
+if (beresp.http.X-Cacheable ~ "1") {
+    unset beresp.http.set-cookie;
+}
+```
+
+We highly recommend using the VCL provided [the varnish-5.0-configuration-templates repo] made by [Mattias Geniar](https://github.com/mattiasgeniar).
+
 ## Usage
 
-``` php
-$skeleton = new Spatie\Skeleton();
-echo $skeleton->echoPhrase('Hello, Spatie!');
+### Caching responses
+
+The routes whose response should be cached should use the `cacheable` middleware
+
+```php
+// your routes file
+
+//will be cached by Varnish
+Route::group(['middleware' => 'cacheable'], function() {
+    Route::get('/', 'HomeController@index');
+    Route::get('/contact', 'ContactPageController@index');
+});
+
+//won't be cached by Varnish
+Route::get('do-not-cache', 'AnotherController@index');
+```
+
+The amount of minutes that Varnish should cache this content can be configured in the `cache_time_in_minutes` key in the `laravel-varnish.php` config file. Alternatively you could also use a middleware parameter to specify that value.
+
+```php
+
+// Varnish will cache the responses of the routes inside the group for 15 minutes 
+Route::group(['middleware' => 'cacheable:15'], function() {
+   ...
+)};
 ```
 
 ## Changelog

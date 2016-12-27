@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Spatie\Varnish\Middleware;
 
 use Closure;
 
 class CacheWithVarnish
 {
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, int $cacheTimeInMinutes = null)
     {
         $response = $next($request);
 
         return $response->withHeaders([
             'X-Cacheable' => '1',
-            'Cache-Control' => 'public, max-age='. 60 * config('laravel-varnish.cache_time_in_minutes'),
+            'Cache-Control' => 'public, max-age='. 60 * ($cacheTimeInMinutes ?? config('laravel-varnish.cache_time_in_minutes')),
         ]);
     }
 }

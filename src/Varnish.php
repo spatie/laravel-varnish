@@ -27,7 +27,7 @@ class Varnish
      */
     protected function getHosts($host = null): array
     {
-        $host = $host ?? config('laravel-varnish.hosts');
+        $host = $host ?? config('laravel-varnish.host');
 
         if (! is_array($host)) {
             $host = [$host];
@@ -38,7 +38,7 @@ class Varnish
 
     protected function generateFlushCommand(array $hosts): string
     {
-        if (! [$hosts]) {
+        if (! is_array($hosts)) {
             $hosts = [$hosts];
         }
 
@@ -53,12 +53,7 @@ class Varnish
         return "sudo varnishadm -S {$config['secret']} -T 127.0.0.1:{$config['administrative_port']} 'ban req.http.host ~ {$hostsRegex}'";
     }
 
-    /**
-     * @param $command
-     *
-     * @return \Symfony\Component\Process\Process
-     */
-    protected function executeCommand($command): Process
+    protected function executeCommand(string $command): Process
     {
         $process = new Process($command);
 
