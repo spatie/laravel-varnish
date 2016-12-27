@@ -2,16 +2,8 @@
 
 namespace Spatie\Varnish;
 
+use App\Console\Commands\FlushVarnishCache;
 use Illuminate\Support\ServiceProvider;
-use Spatie\UptimeMonitor\Commands\CheckUptime;
-use Spatie\UptimeMonitor\Commands\ListMonitors;
-use Spatie\UptimeMonitor\Commands\CreateMonitor;
-use Spatie\UptimeMonitor\Commands\DeleteMonitor;
-use Spatie\UptimeMonitor\Commands\EnableMonitor;
-use Spatie\UptimeMonitor\Commands\DisableMonitor;
-use Spatie\UptimeMonitor\Commands\CheckCertificates;
-use Spatie\UptimeMonitor\Notifications\EventHandler;
-use Spatie\UptimeMonitor\Helpers\UptimeResponseCheckers\UptimeResponseChecker;
 
 class VarnishServiceProvider extends ServiceProvider
 {
@@ -22,10 +14,20 @@ class VarnishServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/laravel-varnish.php' => config_path('laravel-varnish.php'),
+                __DIR__ . '/../config/laravel-varnish.php' => config_path('laravel-varnish.php'),
             ], 'config');
         }
+    }
 
+    public function register()
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/laravel-uptime-monitor.php', 'laravel-uptime-monitor');
+
+        $this->app->bind('command.monitor:check-uptime', FlushVarnishCache::class);
+
+        $this->commands([
+            'command.varnish:flush',
+        ]);
     }
 
 }

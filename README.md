@@ -106,7 +106,7 @@ We highly recommend using the VCL provided [the varnish-5.0-configuration-templa
 
 ### Caching responses
 
-The routes whose response should be cached should use the `cacheable` middleware
+The routes whose response should be cached should use the `cacheable` middleware.
 
 ```php
 // your routes file
@@ -130,6 +130,23 @@ Route::group(['middleware' => 'cacheable:15'], function() {
    ...
 )};
 ```
+
+Behind the scenes the middleware will add an `X-Cacheable` and `Cache-Control` to the response. Varnish will remove all cookies from Laravel's response. So keep in mind that, because the`laravel_session` cookie will be removed as well, sessions will not work on routes were the `CacheWithVarnish` middleware is applied.
+
+### Clearing cache from Varnish
+
+All cached may be clearing (in Varnish parlance: purged) from the cache using:
+
+```php
+varnish()->flush();
+```
+
+There also an artisan command that you could come in handy in your deployment script.
+
+```php
+php artisan varnish:flush
+```
+
 
 ## Changelog
 

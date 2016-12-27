@@ -27,6 +27,6 @@ class FlushVarnishCache extends Command
      */
     public function handle()
     {
-        varnish()->ban();
+        varnish()->flush();
     }
 }
