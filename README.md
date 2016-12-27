@@ -75,7 +75,9 @@ return [
 ];
 ```
 
-Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the registered route middelwares:
+In the published `laravel-varnish.php` config file you should set the `host` key to the right value. 
+
+Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middelwares:
 
 ```php
 // app/Http/Kernel.php
@@ -83,10 +85,10 @@ Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the registere
 protected $routeMiddleware = [
 ...
    'cacheable' => Spatie\Varnish\Middleware\CacheWithVarnish::class,
-]
+];
 ```
 
-Finally, in you should add these lines to the `vcl_backend_reponse` function in your VCL:
+Finally, you should add these lines to the `vcl_backend_reponse` function in your VCL (by default this is located at `/etc/varnish/default.vcl` on your server):
 
 ```
 if (beresp.http.X-Cacheable ~ "1") {
