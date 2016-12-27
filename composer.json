@@ -32,7 +32,10 @@
     "autoload-dev": {
         "psr-4": {
             "Spatie\\Varnish\\Test\\": "tests"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
