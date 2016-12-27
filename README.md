@@ -31,7 +31,7 @@ You can install the package via composer:
 composer require spatie/laravel-varnish
 ```
 
-First register the service provider and facade in your application.
+First up: registering the service provider:
 
 ```php
 // config/app.php
