@@ -27,15 +27,15 @@
     "autoload": {
         "psr-4": {
             "Spatie\\Varnish\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Spatie\\Varnish\\Test\\": "tests"
         },
         "files": [
             "src/helpers.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Spatie\\Varnish\\Test\\": "tests"
+        }
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
