@@ -3,7 +3,6 @@
 namespace Spatie\Varnish\Test;
 
 use Spatie\Varnish\Varnish;
-use PHPUnit_Framework_TestCase;
 
 class VarnishTest extends TestCase
 {
@@ -36,7 +35,7 @@ class VarnishTest extends TestCase
 
         $this->assertEquals($expectedCommand, (new Varnish())->generateBanCommand([
             'example.com',
-            'example2.com'
+            'example2.com',
         ]));
     }
 }

@@ -42,7 +42,6 @@ class MiddlewareTest extends TestCase
         $response->seeHeader('Cache-Control', 'max-age=600, public');
     }
 
-
     protected function getRoute()
     {
         return Route::get('cache-me', function () {
