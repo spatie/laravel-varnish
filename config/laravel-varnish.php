@@ -9,7 +9,7 @@ return [
     /*
      * The location of the file containing the administrative password.
      */
-    'secret' => '/etc/varnish/secret',
+    'administrative_secret' => '/etc/varnish/secret',
 
     /*
      * The port where the administrative tasks may be sent to.

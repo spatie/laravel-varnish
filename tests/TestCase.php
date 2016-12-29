@@ -4,6 +4,7 @@ namespace Spatie\Varnish\Test;
 
 use Route;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\Varnish\VarnishServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -12,6 +13,18 @@ class TestCase extends Orchestra
         parent::setUp();
 
         $this->setUpDummyRoutes();
+    }
+
+    /**
+     * @param \Illuminate\Foundation\Application $app
+     *
+     * @return array
+     */
+    protected function getPackageProviders($app)
+    {
+        return [
+            VarnishServiceProvider::class,
+        ];
     }
 
     protected function setUpDummyRoutes()
