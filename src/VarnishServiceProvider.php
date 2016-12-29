@@ -21,9 +21,9 @@ class VarnishServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/laravel-uptime-monitor.php', 'laravel-uptime-monitor');
+        $this->mergeConfigFrom(__DIR__.'/../config/laravel-varnish.php', 'laravel-varnish');
 
-        $this->app->bind('command.monitor:check-uptime', FlushVarnishCache::class);
+        $this->app->bind('command.varnish:flush', FlushVarnishCache::class);
 
         $this->commands([
             'command.varnish:flush',

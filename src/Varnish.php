@@ -16,7 +16,7 @@ class Varnish
     {
         $host = $this->getHosts($host);
 
-        $command = $this->generateFlushCommand($host);
+        $command = $this->generateBanCommand($host);
 
         return $this->executeCommand($command);
     }
@@ -37,7 +37,7 @@ class Varnish
         return $host;
     }
 
-    protected function generateFlushCommand(array $hosts): string
+    public function generateBanCommand(array $hosts): string
     {
         if (! is_array($hosts)) {
             $hosts = [$hosts];
