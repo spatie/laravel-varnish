@@ -28,5 +28,7 @@ class FlushVarnishCache extends Command
     public function handle()
     {
         varnish()->flush();
+
+        $this->comment("The varnish cache has been flushed!");
     }
 }
