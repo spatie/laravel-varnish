@@ -7,9 +7,6 @@ use Spatie\Varnish\Commands\FlushVarnishCache;
 
 class VarnishServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     */
     public function boot()
     {
         if ($this->app->runningInConsole()) {
