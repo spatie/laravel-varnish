@@ -3,7 +3,7 @@
 namespace Spatie\Varnish;
 
 use Illuminate\Support\ServiceProvider;
-use App\Console\Commands\FlushVarnishCache;
+use Spatie\Varnish\Commands\FlushVarnishCache;
 
 class VarnishServiceProvider extends ServiceProvider
 {
