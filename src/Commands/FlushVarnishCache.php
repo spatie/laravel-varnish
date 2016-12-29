@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Spatie\Varnish\Commands;
 
 use Illuminate\Console\Command;
 
