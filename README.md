@@ -38,7 +38,7 @@ First up: registering the service provider:
 
 'providers' => [
     ...
-    'Spatie\Varnish\VarnishServiceProvider',
+    Spatie\Varnish\VarnishServiceProvider::class,
 ];
 ```
 
