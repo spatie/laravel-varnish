@@ -21,4 +21,9 @@ return [
      * middleware should be cached.
      */
     'cache_time_in_minutes' => 60 * 24,
+
+    /*
+     * The name of the header that triggers Varnish to cache the response.
+     */
+    'cacheable_header_name' => 'X-Cacheable',
 ];

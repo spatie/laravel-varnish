@@ -11,7 +11,7 @@ class CacheWithVarnish
         $response = $next($request);
 
         return $response->withHeaders([
-            'X-Cacheable' => '1',
+            config('laravel-varnish.cacheable_header_name') => '1',
             'Cache-Control' => 'public, max-age='. 60 * ($cacheTimeInMinutes ?? config('laravel-varnish.cache_time_in_minutes')),
         ]);
     }
