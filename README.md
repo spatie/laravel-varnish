@@ -22,7 +22,7 @@ The best postcards will get published on the open source page on our website.
 
 ## Installation
 
-We assume that you've already installed Varnish on your server. If not read [this blogpost](https://murze.be/xxx) to learn how to install it.
+We assume that you've already installed Varnish on your server. If not read [this blogpost](https://murze.be/2016/12/varnish-on-a-laravel-forge-server) to learn how to install it.
 
 
 You can install the package via composer:

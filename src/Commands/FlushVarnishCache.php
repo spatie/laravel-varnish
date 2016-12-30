@@ -29,6 +29,6 @@ class FlushVarnishCache extends Command
     {
         varnish()->flush();
 
-        $this->comment("The varnish cache has been flushed!");
+        $this->comment('The varnish cache has been flushed!');
     }
 }
