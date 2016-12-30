@@ -131,16 +131,16 @@ Behind the scenes the middleware will add an `X-Cacheable` and `Cache-Control` t
 
 ### Clearing cache from Varnish
 
-All cached may be clearing (in Varnish parlance: purged) from the cache using:
-
-```php
-varnish()->flush();
-```
-
-There also an artisan command that you could come in handy in your deployment script.
+There's an artisan command to flush the cache. This can come in handy in your deployment script.
 
 ```bash
 php artisan varnish:flush
+```
+
+You can also do this in your code to flush the cache:
+
+```php
+(new Spatie\Varnish\Varnish())->flush();
 ```
 
 ## Changelog
