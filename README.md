@@ -80,7 +80,7 @@ return [
 ];
 ```
 
-In the published `laravel-varnish.php` config file you should set the `host` key to the right value. 
+In the published `laravel-varnish.php` config file you should set the `host` key to the right value.
 
 Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middelwares:
 
@@ -101,7 +101,7 @@ if (beresp.http.X-Cacheable ~ "1") {
 }
 ```
 
-We highly recommend using the VCL provided [the varnish-5.0-configuration-templates repo] made by [Mattias Geniar](https://github.com/mattiasgeniar).
+We highly recommend using the VCL provided [the varnish-5.0-configuration-templates repo](https://github.com/mattiasgeniar/varnish-5.0-configuration-templates) made by [Mattias Geniar](https://github.com/mattiasgeniar).
 
 ## Usage
 
@@ -126,7 +126,7 @@ The amount of minutes that Varnish should cache this content can be configured i
 
 ```php
 
-// Varnish will cache the responses of the routes inside the group for 15 minutes 
+// Varnish will cache the responses of the routes inside the group for 15 minutes
 Route::group(['middleware' => 'cacheable:15'], function() {
    ...
 )};
