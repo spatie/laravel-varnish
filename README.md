@@ -142,6 +142,8 @@ There's an artisan command to flush the cache. This can come in handy in your de
 php artisan varnish:flush
 ```
 
+Under the hood flushing the cache will call the `sudo varnishadm`. To make it work without any hassle make sure the command is run by a unix user that has `sudo` rights.
+
 You can also do this in your code to flush the cache:
 
 ```php
