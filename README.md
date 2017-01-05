@@ -87,7 +87,7 @@ Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route mid
 
 protected $routeMiddleware = [
 ...
-   'cacheable' => Spatie\Varnish\Middleware\CacheWithVarnish::class,
+   'cacheable' => \Spatie\Varnish\Middleware\CacheWithVarnish::class,
 ];
 ```
 
