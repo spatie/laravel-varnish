@@ -2,6 +2,7 @@
 
 namespace Spatie\Varnish\Commands;
 
+use Spatie\Varnish\Varnish;
 use Illuminate\Console\Command;
 
 class FlushVarnishCache extends Command
@@ -27,7 +28,7 @@ class FlushVarnishCache extends Command
      */
     public function handle()
     {
-        varnish()->flush();
+        (new Varnish())->flush();
 
         $this->comment('The varnish cache has been flushed!');
     }
