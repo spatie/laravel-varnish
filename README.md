@@ -91,7 +91,7 @@ protected $routeMiddleware = [
 ];
 ```
 
-Finally, you should add these lines to the `vcl_backend_reponse` function in your VCL (by default this is located at `/etc/varnish/default.vcl` on your server):
+Finally, you should add these lines to the `vcl_backend_response` function in your VCL (by default this is located at `/etc/varnish/default.vcl` on your server):
 
 ```
 if (beresp.http.X-Cacheable ~ "1") {
