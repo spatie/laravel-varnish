@@ -2,6 +2,7 @@
 
 namespace Spatie\Varnish\Commands;
 
+use Spatie\Varnish\Varnish;
 use Illuminate\Console\Command;
 use Spatie\Varnish\Varnish;
 
