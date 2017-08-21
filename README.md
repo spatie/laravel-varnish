@@ -77,7 +77,7 @@ return [
 ];
 ```
 
-In the published `laravel-varnish.php` config file you should set the `host` key to the right value.
+In the published `varnish.php` config file you should set the `host` key to the right value.
 
 Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middelwares:
 
