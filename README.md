@@ -28,16 +28,7 @@ You can install the package via composer:
 composer require spatie/laravel-varnish
 ```
 
-First up: registering the service provider:
-
-```php
-// config/app.php
-
-'providers' => [
-    ...
-    Spatie\Varnish\VarnishServiceProvider::class,
-];
-```
+The package will automatically register itself.
 
 Next you must publish the config-file with:
 
