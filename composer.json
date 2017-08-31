@@ -17,12 +17,12 @@
     ],
     "require": {
         "php": "^7.0",
-        "illuminate/console": "5.5.x-dev",
-        "illuminate/http": "5.5.x-dev"
+        "illuminate/console": "~5.5.0",
+        "illuminate/http": "~5.5.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.3",
-        "orchestra/testbench": "3.5.x-dev"
+        "orchestra/testbench": "~3.5.0"
     },
     "autoload": {
         "psr-4": {
@@ -46,7 +46,5 @@
                 "Spatie\\Varnish\\VarnishServiceProvider"
             ]
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-lowest": true
+    }
 }
