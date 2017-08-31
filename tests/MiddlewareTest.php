@@ -44,7 +44,7 @@ class MiddlewareTest extends TestCase
     /** @test */
     public function it_accepts_an_argument_to_determine_the_max_age()
     {
-        $this->getRoute()->middleware(CacheWithVarnish::class . ':10');
+        $this->getRoute()->middleware(CacheWithVarnish::class.':10');
 
         $this->get('/cache-me')
             ->assertHeader('X-Cacheable', '1')
