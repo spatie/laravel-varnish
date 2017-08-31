@@ -20,8 +20,8 @@ class VarnishTest extends TestCase
         $secret = '/etc/custom/secret';
         $port = 1234;
 
-        $this->app['config']->set('laravel-varnish.administrative_secret', $secret);
-        $this->app['config']->set('laravel-varnish.administrative_port', $port);
+        $this->app['config']->set('varnish.administrative_secret', $secret);
+        $this->app['config']->set('varnish.administrative_port', $port);
 
         $expectedCommand = "sudo varnishadm -S {$secret} -T 127.0.0.1:{$port} 'ban req.http.host ~ (^example.com$)'";
 

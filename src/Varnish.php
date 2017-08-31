@@ -28,7 +28,7 @@ class Varnish
      */
     protected function getHosts($host = null): array
     {
-        $host = $host ?? config('laravel-varnish.host');
+        $host = $host ?? config('varnish.host');
 
         if (! is_array($host)) {
             $host = [$host];
@@ -49,7 +49,7 @@ class Varnish
             })
             ->implode('|');
 
-        $config = config('laravel-varnish');
+        $config = config('varnish');
 
         return "sudo varnishadm -S {$config['administrative_secret']} -T 127.0.0.1:{$config['administrative_port']} 'ban req.http.host ~ {$hostsRegex}'";
     }

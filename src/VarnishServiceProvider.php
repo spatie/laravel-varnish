@@ -11,14 +11,14 @@ class VarnishServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/laravel-varnish.php' => config_path('laravel-varnish.php'),
+                __DIR__.'/../config/varnish.php' => config_path('varnish.php'),
             ], 'config');
         }
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/laravel-varnish.php', 'laravel-varnish');
+        $this->mergeConfigFrom(__DIR__.'/../config/varnish.php', 'varnish');
 
         $this->app->bind('command.varnish:flush', FlushVarnishCache::class);
 

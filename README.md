@@ -28,16 +28,7 @@ You can install the package via composer:
 composer require spatie/laravel-varnish
 ```
 
-First up: registering the service provider:
-
-```php
-// config/app.php
-
-'providers' => [
-    ...
-    Spatie\Varnish\VarnishServiceProvider::class,
-];
-```
+The package will automatically register itself.
 
 Next you must publish the config-file with:
 
@@ -77,7 +68,7 @@ return [
 ];
 ```
 
-In the published `laravel-varnish.php` config file you should set the `host` key to the right value.
+In the published `varnish.php` config file you should set the `host` key to the right value.
 
 Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middelwares:
 
@@ -138,6 +129,8 @@ There's an artisan command to flush the cache. This can come in handy in your de
 ```bash
 php artisan varnish:flush
 ```
+
+Under the hood flushing the cache will call the `sudo varnishadm`. To make it work without any hassle make sure the command is run by a unix user that has `sudo` rights.
 
 You can also do this in your code to flush the cache:
 
