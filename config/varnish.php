@@ -2,9 +2,9 @@
 
 return [
     /*
-     * The hostname this Laravel app is listening to.
+     * The hostname(s) this Laravel app is listening to.
      */
-    'host' => 'example.com',
+    'host' => ['example.com'],
 
     /*
      * The location of the file containing the administrative password.
