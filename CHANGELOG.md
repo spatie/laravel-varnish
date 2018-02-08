@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.0.2 - 2017-02-08
+
+- add support for L5.6
+
 ## 2.0.1 - 2017-09-09
 
 - make it more clear in the config file that `hosts` can accept multiple values
