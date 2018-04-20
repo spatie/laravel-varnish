@@ -28,8 +28,20 @@ class FlushVarnishCache extends Command
      */
     public function handle()
     {
-        (new Varnish())->flush();
+        $success_msg = 'The varnish cache has been flushed!';
+        $error_msg = 'Failed to flush the varnish cache!';
 
-        $this->comment('The varnish cache has been flushed!');
+        try {
+            if ((new Varnish())->flush()) {
+                $this->comment($success_msg);
+            } else {
+                $this->error($error_msg);
+            }
+        } catch (\Exception $exception) {
+            $this->error($error_msg);
+            $this->error($exception->getMessage());
+        }
+
+        return true;
     }
 }
