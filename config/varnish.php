@@ -7,9 +7,34 @@ return [
     'host' => ['example.com'],
 
     /*
+     * The execution type to be used. Allowed values are 'command' or 'socket'.
+     *
+     * This will determine whether `varnishadm` or the varnish administrative socket
+     * is used for a local or remote varnish instance, respectively.
+     */
+    'execution_type' => 'command',
+
+    /*
      * The location of the file containing the administrative password.
      */
-    'administrative_secret' => '/etc/varnish/secret',
+    'administrative_secret_file' => '/etc/varnish/secret',
+
+    /*
+     * The actual administrative password used in your varnish configuration.
+     *
+     * When using `execution_type` 'command', use `administrative_secret_file`
+     * instead, as `varnishadm` expects the secret to be a file path.
+     *
+     * If you are using `execution_type` 'socket', both parameters are supported, but
+     * `administrative_secret` will take precedence over `administrative_secret_file`.
+     */
+    'administrative_secret' => '',
+
+    /*
+     * The host where the administrative tasks may be sent to when
+     * using execution_type 'socket'.
+     */
+    'administrative_host' => '127.0.0.1',
 
     /*
      * The port where the administrative tasks may be sent to.
