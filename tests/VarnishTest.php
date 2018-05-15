@@ -42,7 +42,7 @@ class VarnishTest extends TestCase
         $secret = '/etc/custom/secret';
         $port = 1234;
 
-        $this->app['config']->set('varnish.administrative_secret_file', $secret);
+        $this->app['config']->set('varnish.administrative_secret', $secret);
         $this->app['config']->set('varnish.administrative_port', $port);
 
         $expectedCommand = "sudo varnishadm -S {$secret} -T 127.0.0.1:{$port} '{$expr}'";
@@ -72,8 +72,8 @@ class VarnishTest extends TestCase
         $fp = fopen($tmpFile, 'w');
         fwrite($fp, $expectedSecret);
 
-        $this->app['config']->set('varnish.administrative_secret', '');
-        $this->app['config']->set('varnish.administrative_secret_file', $tmpFile);
+        $this->app['config']->set('varnish.administrative_secret_string', '');
+        $this->app['config']->set('varnish.administrative_secret', $tmpFile);
 
         $this->assertEquals($expectedSecret, (new Varnish())->getSecret());
 
@@ -86,7 +86,7 @@ class VarnishTest extends TestCase
     {
         $expectedSecret = 'custom-varnish-secret';
 
-        $this->app['config']->set('varnish.administrative_secret', $expectedSecret);
+        $this->app['config']->set('varnish.administrative_secret_string', $expectedSecret);
 
         $this->assertEquals($expectedSecret, (new Varnish())->getSecret());
     }

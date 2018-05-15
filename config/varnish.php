@@ -17,18 +17,18 @@ return [
     /*
      * The location of the file containing the administrative password.
      */
-    'administrative_secret_file' => '/etc/varnish/secret',
+    'administrative_secret' => '/etc/varnish/secret',
 
     /*
      * The actual administrative password used in your varnish configuration.
      *
-     * When using `execution_type` 'command', use `administrative_secret_file`
+     * When using `execution_type` 'command', use `administrative_secret`
      * instead, as `varnishadm` expects the secret to be a file path.
      *
      * If you are using `execution_type` 'socket', both parameters are supported, but
-     * `administrative_secret` will take precedence over `administrative_secret_file`.
+     * `administrative_secret_string` will take precedence over `administrative_secret`.
      */
-    'administrative_secret' => '',
+    'administrative_secret_string' => '',
 
     /*
      * The host where the administrative tasks may be sent to when

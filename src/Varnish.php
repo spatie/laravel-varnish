@@ -68,7 +68,7 @@ class Varnish
     {
         $config = config('varnish');
 
-        return "sudo varnishadm -S {$config['administrative_secret_file']} -T 127.0.0.1:{$config['administrative_port']} '{$expr}'";
+        return "sudo varnishadm -S {$config['administrative_secret']} -T 127.0.0.1:{$config['administrative_port']} '{$expr}'";
     }
 
     /**
@@ -97,10 +97,10 @@ class Varnish
     public function getSecret()
     {
         $config = config('varnish');
-        if (! $secret = $config['administrative_secret']) {
+        if (! $secret = $config['administrative_secret_string']) {
             $secret = '';
-            if (file_exists($config['administrative_secret_file'])) {
-                $secret = trim(file_get_contents($config['administrative_secret_file']));
+            if (file_exists($config['administrative_secret'])) {
+                $secret = trim(file_get_contents($config['administrative_secret']));
             }
         }
 

@@ -48,18 +48,18 @@ return [
     /*
      * The location of the file containing the administrative password.
      */
-    'administrative_secret_file' => '/etc/varnish/secret',
+    'administrative_secret' => '/etc/varnish/secret',
 
     /*
      * The actual administrative password used in your varnish configuration.
      *
-     * When using `execution_type` 'command', use `administrative_secret_file`
+     * When using `execution_type` 'command', use `administrative_secret`
      * instead, as `varnishadm` expects the secret to be a file path.
      *
      * If you are using `execution_type` 'socket', both parameters are supported, but
-     * `administrative_secret` will take precedence over `administrative_secret_file`.
+     * `administrative_secret_string` will take precedence over `administrative_secret`.
      */
-    'administrative_secret' => '',
+    'administrative_secret_string' => '',
 
     /*
      * The host where the administrative tasks may be sent to when
@@ -91,8 +91,8 @@ to flush the cache of a remote Varnish server. Set `execution_type` to **command
 on the local system.
 
 In case you've set the `execution_type` to **socket**, you can either store the administrative secret
-in a file and set `administrative_secret_file`, as used by `varnishadm`, or provide the actual
-secret string in the `administrative_secret` variable.
+in a file and set `administrative_secret`, as used by `varnishadm`, or provide the actual
+secret string in the `administrative_secret_string` variable.
 
 Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middelwares:
 
