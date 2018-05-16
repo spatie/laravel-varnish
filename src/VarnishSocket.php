@@ -161,12 +161,39 @@ class VarnishSocket
      */
     private function read()
     {
-        $code = null;
-        $len = -1;
+        // Varnish will output a code and a content length, followed by the actual content
+        if (preg_match('~^(\d{3}) (\d+)~', $this->readChunks(), $match)) {
+            // Read content with length $len
+            return [
+                'code' => (int) $match[1],
+                'content' => $this->readChunks((int) $match[2]),
+            ];
+        }
 
-        while (! feof($this->varnishSocket)) {
-            // Read data from socket and check for timeout
-            $response = fgets($this->varnishSocket, self::READ_CHUNK_SIZE);
+        // Failed to get code from socket
+        throw new \Exception(
+            'Failed to read response code from Varnish socket'
+        );
+    }
+
+    /**
+     * Read content with length $length. When no length is given,
+     * we set the length to 1 so that a single chunk is read.
+     *
+     * @param integer $length
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    private function readChunks($length = 1) {
+        $response = '';
+
+        while (! feof($this->varnishSocket) && strlen($response) < $length) {
+            // Read chunk from socket and append to response
+            $response .= fgets($this->varnishSocket, self::READ_CHUNK_SIZE);
+
+            // Check for empty response and timeout
             if (empty($response)) {
                 $meta = stream_get_meta_data($this->varnishSocket);
                 if ($meta['timed_out']) {
@@ -175,34 +202,9 @@ class VarnishSocket
                     );
                 }
             }
-
-            // Varnish will output a code and a content length, followed by the actual content
-            if (preg_match('~^(\d{3}) (\d+)~', $response, $match)) {
-                $code = (int) $match[1];
-                $len = (int) $match[2];
-                break;
-            }
         }
 
-        // Failed to get code from socket
-        if ($code === null) {
-            throw new \Exception(
-                'Failed to read response code from Varnish socket'
-            );
-        } else {
-            $response = [
-                'code' => $code,
-                'content' => '',
-            ];
-
-            // Read content with length $len
-            while (! feof($this->varnishSocket) &&
-                strlen($response['content']) < $len) {
-                $response['content'] .= fgets($this->varnishSocket, self::READ_CHUNK_SIZE);
-            }
-
-            return $response;
-        }
+        return $response;
     }
 
     /**
