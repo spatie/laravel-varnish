@@ -20,13 +20,18 @@ You can install the package via composer:
 composer require spatie/laravel-varnish
 ```
 
-The package will automatically register itself.
+The package will automatically register itself for Laravel 5.5+. 
 
-Next you must publish the config-file with:
+If you are using Laravel < 5.5, you also need to add `Varnish\VarnishServiceProvider` to your `config/app.php` providers array:
+```php
+\Spatie\Varnish\VarnishServiceProvider::class
+```
+Next if you use Laravel you must publish the config-file with:
 
 ```bash
 php artisan vendor:publish --provider="Spatie\Varnish\VarnishServiceProvider" --tag="config"
 ```
+and if you use Lumen, you must copy `config/varnish.php` file to your application config folder.
 
 This is the contents of the published file:
 
@@ -62,17 +67,24 @@ return [
 
 In the published `varnish.php` config file you should set the `host` key to the right value.
 
-Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middelwares:
+Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middlewares.
 
+For Laravel:
 ```php
 // app/Http/Kernel.php
-
 protected $routeMiddleware = [
 ...
    'cacheable' => \Spatie\Varnish\Middleware\CacheWithVarnish::class,
 ];
 ```
-
+If you are using Lumen, you need to load config file before route middleware definition to your `bootstrap/app.php`:
+```php
+$app->configure('varnish');
+$app->routeMiddleware([
+...
+   'cacheable' => \Spatie\Varnish\Middleware\CacheWithVarnish::class,
+]);
+```
 Finally, you should add these lines to the `vcl_backend_response` function in your VCL (by default this is located at `/etc/varnish/default.vcl` on your server):
 
 ```
