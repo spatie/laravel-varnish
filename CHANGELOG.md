@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.1.1 - 2018-08-29
+
+- add support for Laravel 5.7
+
 ## 2.1.0 - 2018-08-13
 
 - add support for Lumen
