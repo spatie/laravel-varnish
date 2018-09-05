@@ -12,7 +12,7 @@ class Varnish
      *
      * @return \Symfony\Component\Process\Process
      */
-    public function flush($host = null)
+    public function flush($host = null): Process
     {
         $host = $this->getHosts($host);
 
@@ -39,10 +39,6 @@ class Varnish
 
     public function generateBanCommand(array $hosts): string
     {
-        if (! is_array($hosts)) {
-            $hosts = [$hosts];
-        }
-
         $hostsRegex = collect($hosts)
             ->map(function (string $host) {
                 return "(^{$host}$)";

@@ -2,7 +2,6 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-varnish.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-varnish)
 [![Build Status](https://img.shields.io/travis/spatie/laravel-varnish/master.svg?style=flat-square)](https://travis-ci.org/spatie/laravel-varnish)
-[![SensioLabsInsight](https://img.shields.io/sensiolabs/i/d884a8bb-d97c-4e9c-a2f0-3e673e80add3.svg?style=flat-square)](https://insight.sensiolabs.com/projects/d884a8bb-d97c-4e9c-a2f0-3e673e80add3)
 [![Quality Score](https://img.shields.io/scrutinizer/g/spatie/laravel-varnish.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/laravel-varnish)
 [![StyleCI](https://styleci.io/repos/72834357/shield?branch=master)](https://styleci.io/repos/72834357)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-varnish.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-varnish)
@@ -20,13 +19,18 @@ You can install the package via composer:
 composer require spatie/laravel-varnish
 ```
 
-The package will automatically register itself.
+The package will automatically register itself for Laravel 5.5+. 
 
-Next you must publish the config-file with:
+If you are using Laravel < 5.5, you also need to add `Varnish\VarnishServiceProvider` to your `config/app.php` providers array:
+```php
+\Spatie\Varnish\VarnishServiceProvider::class
+```
+Next if you use Laravel you must publish the config-file with:
 
 ```bash
 php artisan vendor:publish --provider="Spatie\Varnish\VarnishServiceProvider" --tag="config"
 ```
+and if you use Lumen, you must copy `config/varnish.php` file to your application config folder.
 
 This is the contents of the published file:
 
@@ -62,17 +66,24 @@ return [
 
 In the published `varnish.php` config file you should set the `host` key to the right value.
 
-Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middelwares:
+Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middlewares.
 
+For Laravel:
 ```php
 // app/Http/Kernel.php
-
 protected $routeMiddleware = [
 ...
    'cacheable' => \Spatie\Varnish\Middleware\CacheWithVarnish::class,
 ];
 ```
-
+If you are using Lumen, you need to load config file before route middleware definition to your `bootstrap/app.php`:
+```php
+$app->configure('varnish');
+$app->routeMiddleware([
+...
+   'cacheable' => \Spatie\Varnish\Middleware\CacheWithVarnish::class,
+]);
+```
 Finally, you should add these lines to the `vcl_backend_response` function in your VCL (by default this is located at `/etc/varnish/default.vcl` on your server):
 
 ```

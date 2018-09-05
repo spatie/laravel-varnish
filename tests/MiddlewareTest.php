@@ -51,7 +51,7 @@ class MiddlewareTest extends TestCase
             ->assertHeader('Cache-Control', 'max-age=600, public');
     }
 
-    protected function getRoute()
+    private function getRoute()
     {
         return Route::get('cache-me', function () {
             return 'cache me';
