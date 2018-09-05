@@ -19,7 +19,7 @@ class Varnish
      *
      * @throws \Exception
      */
-    public function flush($host = null)
+    public function flush($host = null): Process
     {
         $config = config('varnish');
 
@@ -78,10 +78,6 @@ class Varnish
      */
     public function generateBanExpr(array $hosts): string
     {
-        if (! is_array($hosts)) {
-            $hosts = [$hosts];
-        }
-
         $hostsRegex = collect($hosts)
             ->map(function (string $host) {
                 return "(^{$host}$)";
