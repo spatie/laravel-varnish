@@ -120,7 +120,7 @@ class VarnishSocket
         // Authenticate using secret if authentication is required
         // https://varnish-cache.org/docs/trunk/reference/varnish-cli.html#authentication-with-s
         if ($data['code'] === self::VARN_AUTH) {
-            $challenge = substr($data['content'], 0, 32)."\n";
+            $challenge = substr($data['content'], 0, 32) . "\n";
 
             // Generate the authentication token based on the challenge and secret
             $token = hash('sha256',
