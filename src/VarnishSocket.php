@@ -73,6 +73,17 @@ class VarnishSocket
     const VARN_CLOSE = 500;
 
     /**
+     * Authentication challenge length
+     */
+    const VARN_CHALLENGE_LENGTH = 32;
+
+
+    /**
+     * Varnish control command contains the status code and content length
+     */
+    const VARN_CONTROL_COMMAND_REGEX = '/^(\d{3}) (\d+)/';
+
+    /**
      * The socket used to connect to Varnish and a timeout in seconds.
      */
     protected $varnishSocket = null;
@@ -82,7 +93,7 @@ class VarnishSocket
      * Limits for reading and writing to and from the socket.
      */
     const READ_CHUNK_SIZE = 1024;
-    const MAX_WRITE_SIZE = 16 * 1024;
+    const WRITE_MAX_SIZE = 16 * self::READ_CHUNK_SIZE;
 
     /**
      * Connect to the Varnish socket and authenticate when needed.
@@ -120,25 +131,21 @@ class VarnishSocket
         // Authenticate using secret if authentication is required
         // https://varnish-cache.org/docs/trunk/reference/varnish-cli.html#authentication-with-s
         if ($data['code'] === self::VARN_AUTH) {
-            $challenge = substr($data['content'], 0, 32) . "\n";
+            // The challenge is a random 32-character string
+            $challenge = substr($data['content'], 0, self::VARN_CHALLENGE_LENGTH);
 
             // Generate the authentication token based on the challenge and secret
-            $token = hash('sha256',
-                sprintf('%s%s%s',
-                    $challenge,
-                    $secret,
-                    $challenge
-                ));
+            $token = $this->calculateAuthToken($challenge, $secret);
 
             // Authenticate using token
             $data = $this->command(sprintf('auth %s', $token));
-        }
 
-        if ($data['code'] !== self::VARN_OK) {
-            throw new \Exception(sprintf(
-                'Varnish admin authentication failed: %s',
-                $data['content']
-            ));
+            if ($data['code'] !== self::VARN_OK) {
+                throw new \Exception(sprintf(
+                    'Varnish admin authentication failed: %s',
+                    $data['content']
+                ));
+            }
         }
 
         return $this->isConnected();
@@ -155,56 +162,98 @@ class VarnishSocket
     }
 
     /**
+     * @param $challenge
+     * @param $secret
+     * @return string
+     */
+    private function calculateAuthToken($challenge, $secret) {
+        // Ensure challenge ends with a newline
+        $challenge = $this->ensureNewline($challenge);
+        return hash('sha256',
+            sprintf('%s%s%s',
+                $challenge,
+                $secret,
+                $challenge
+            ));
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    private function ensureNewline($data) {
+        if (! preg_match('/\n$/', $data)) {
+            $data .= "\n";
+        }
+        return $data;
+    }
+
+    /**
      * @return array|bool|string
      *
      * @throws \Exception
      */
     private function read()
     {
-        // Varnish will output a code and a content length, followed by the actual content
-        if (preg_match('~^(\d{3}) (\d+)~', $this->readChunks(), $match)) {
-            // Read content with length $len
-            return [
-                'code' => (int) $match[1],
-                'content' => $this->readChunks((int) $match[2]),
-            ];
-        }
+        $response = [
+            'code' => null,
+            'length' => -1,
+            'content' => ''
+        ];
 
-        // Failed to get code from socket
-        throw new \Exception(
-            'Failed to read response code from Varnish socket'
-        );
-    }
+        while (! feof($this->varnishSocket)) {
+            // Read data from socket and check for timeout
+            $chunk = self::readSingleChunk();
+            if (empty($chunk)) {
+                self::checkSocketTimeout();
+            }
 
-    /**
-     * Read content with length $length. When no length is given,
-     * we set the length to 1 so that a single chunk is read.
-     *
-     * @param integer $length
-     *
-     * @return string
-     *
-     * @throws \Exception
-     */
-    private function readChunks($length = 1) {
-        $response = '';
-
-        while (! feof($this->varnishSocket) && strlen($response) < $length) {
-            // Read chunk from socket and append to response
-            $response .= fgets($this->varnishSocket, self::READ_CHUNK_SIZE);
-
-            // Check for empty response and timeout
-            if (empty($response)) {
-                $meta = stream_get_meta_data($this->varnishSocket);
-                if ($meta['timed_out']) {
-                    throw new \Exception(
-                        'Varnish socket connection timed out'
-                    );
-                }
+            // Varnish will output a code and a content length, followed by the actual content
+            if (preg_match('~^(\d{3}) (\d+)~', $chunk, $match)) {
+                $response['code'] = (int) $match[1];
+                $response['length'] = (int) $match[2];
+                break;
             }
         }
 
+        // Failed to get code from socket
+        if ($response['code'] === null) {
+            throw new \Exception(
+                'Failed to read response code from Varnish socket'
+            );
+        }
+
+        // Read content with length
+        while (! feof($this->varnishSocket) &&
+            strlen($response['content']) < $response['length']) {
+            $chunk = self::readSingleChunk();
+            if (empty($chunk)) {
+                self::checkSocketTimeout();
+            }
+
+            $response['content'] .= $chunk;
+        }
+
         return $response;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function checkSocketTimeout() {
+        $meta = stream_get_meta_data($this->varnishSocket);
+        if ($meta['timed_out']) {
+            throw new \Exception(
+                'Varnish socket connection timed out'
+            );
+        }
+    }
+
+    /**
+     * @return bool|string
+     */
+    private function readSingleChunk() {
+        return fgets($this->varnishSocket, self::READ_CHUNK_SIZE);
     }
 
     /**
@@ -218,10 +267,14 @@ class VarnishSocket
      */
     private function write($data)
     {
-        if (strlen($data) >= self::MAX_WRITE_SIZE) {
+        if (!$this->isConnected()) {
+            throw new \Exception('Cannot write to Varnish socket because it\'s not connected');
+        }
+        $data = $this->ensureNewline($data);
+        if (strlen($data) >= self::WRITE_MAX_SIZE) {
             throw new \Exception(sprintf(
                 'Data to write to Varnish socket is too large (max %d chars)',
-                self::MAX_WRITE_SIZE
+                self::WRITE_MAX_SIZE
             ));
         }
 
@@ -240,13 +293,13 @@ class VarnishSocket
      * @param string $cmd
      * @param int $ok
      *
-     * @return string
+     * @return array
      *
      * @throws \Exception
      */
     public function command($cmd, $ok = self::VARN_OK)
     {
-        $response = $this->write($cmd."\n")->read();
+        $response = $this->write($cmd)->read();
         if ($response['code'] !== $ok) {
             throw new \Exception(
                 sprintf(

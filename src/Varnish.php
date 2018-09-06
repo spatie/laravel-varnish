@@ -19,7 +19,7 @@ class Varnish
      *
      * @throws \Exception
      */
-    public function flush($host = null): Process
+    public function flush($host = null): bool
     {
         $config = config('varnish');
 
@@ -33,7 +33,6 @@ class Varnish
                 break;
             case self::EXEC_COMMAND:
                 $command = $this->generateBanCommand($expr);
-
                 return $this->executeCommand($command);
                 break;
             default:
@@ -131,12 +130,15 @@ class Varnish
         $socket = new VarnishSocket();
 
         try {
-            $socket->connect(
+            if ($socket->connect(
                 $config['administrative_host'],
                 $config['administrative_port'],
                 $this->getSecret()
-            );
-            $socket->command($command);
+            )) {
+                $socket->command($command);
+            }
+        } catch(\Exception $e) {
+            return false;
         } finally {
             $socket->quit();
         }
