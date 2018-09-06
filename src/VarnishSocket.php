@@ -108,13 +108,24 @@ class VarnishSocket
     public function connect($host, $port, $secret = '')
     {
         // Open socket connection
+        self::socketConnect($host, $port);
+        self::authenticate($secret);
+        return $this->isConnected();
+    }
+
+    /**
+     * @param $host
+     * @param $port
+     * @throws \Exception
+     */
+    private function socketConnect($host, $port) {
         $this->varnishSocket = fsockopen(
             $host, $port,
             $errno, $errstr,
             $this->socketTimeout
         );
 
-        if (! is_resource($this->varnishSocket)) {
+        if (! self::isConnected()) {
             throw new \Exception(sprintf(
                 'Failed to connect to Varnish on %s:%d, error %d: %s',
                 $host, $port, $errno, $errstr
@@ -124,7 +135,13 @@ class VarnishSocket
         // Set stream options
         stream_set_blocking($this->varnishSocket, true);
         stream_set_timeout($this->varnishSocket, $this->socketTimeout);
+    }
 
+    /**
+     * @param $secret
+     * @throws \Exception
+     */
+    private function authenticate($secret) {
         // Read first data from socket
         $data = $this->read();
 
@@ -138,7 +155,9 @@ class VarnishSocket
             $token = $this->calculateAuthToken($challenge, $secret);
 
             // Authenticate using token
-            $data = $this->command(sprintf('auth %s', $token));
+            $data = $this->command(
+                sprintf('auth %s', $token)
+            );
 
             if ($data['code'] !== self::VARN_OK) {
                 throw new \Exception(sprintf(
@@ -147,8 +166,6 @@ class VarnishSocket
                 ));
             }
         }
-
-        return $this->isConnected();
     }
 
     /**
@@ -158,7 +175,7 @@ class VarnishSocket
      */
     public function isConnected()
     {
-        return ! is_null($this->varnishSocket);
+        return is_resource($this->varnishSocket);
     }
 
     /**
@@ -320,7 +337,9 @@ class VarnishSocket
      */
     public function close()
     {
-        is_resource($this->varnishSocket) && fclose($this->varnishSocket);
+        if (self::isConnected()) {
+            fclose($this->varnishSocket);
+        }
         $this->varnishSocket = null;
     }
 
