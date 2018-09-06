@@ -212,26 +212,15 @@ class VarnishSocket
      */
     private function read()
     {
+        if (!$this->isConnected()) {
+            throw new \Exception('Cannot read from Varnish socket because it\'s not connected');
+        }
         $response = [
             'code' => null,
-            'length' => -1,
+            'length' => null,
             'content' => ''
         ];
-
-        while (! feof($this->varnishSocket)) {
-            // Read data from socket and check for timeout
-            $chunk = self::readSingleChunk();
-            if (empty($chunk)) {
-                self::checkSocketTimeout();
-            }
-
-            // Varnish will output a code and a content length, followed by the actual content
-            if (preg_match('~^(\d{3}) (\d+)~', $chunk, $match)) {
-                $response['code'] = (int) $match[1];
-                $response['length'] = (int) $match[2];
-                break;
-            }
-        }
+        $response = self::readChunks($response);
 
         // Failed to get code from socket
         if ($response['code'] === null) {
@@ -241,17 +230,42 @@ class VarnishSocket
         }
 
         // Read content with length
-        while (! feof($this->varnishSocket) &&
-            strlen($response['content']) < $response['length']) {
+        return self::readChunks($response);
+    }
+
+    /**
+     * @param array $response
+     * @return array
+     * @throws \Exception
+     */
+    private function readChunks(array $response) {
+        while (! feof($this->varnishSocket) && self::continueReading($response)) {
             $chunk = self::readSingleChunk();
             if (empty($chunk)) {
                 self::checkSocketTimeout();
             }
 
+            if ($response['length'] === null) {
+                // Varnish will output a code and a content length, followed by the actual content
+                if (preg_match('~^(\d{3}) (\d+)~', $chunk, $match)) {
+                    $response['code'] = (int) $match[1];
+                    $response['length'] = (int) $match[2];
+                    break;
+                }
+                continue;
+            }
             $response['content'] .= $chunk;
         }
 
         return $response;
+    }
+
+    /**
+     * @param array $response
+     * @return bool
+     */
+    private function continueReading(array $response) {
+        return $response['length'] === null || strlen($response['content']) < $response['length'];
     }
 
     /**
