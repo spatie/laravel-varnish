@@ -77,9 +77,9 @@ class VarnishSocket
      */
     const VARN_CHALLENGE_LENGTH = 32;
 
-
     /**
      * Varnish control command contains the status code and content length
+     * e.g. 107 59
      */
     const VARN_CONTROL_COMMAND_REGEX = '/^(\d{3}) (\d+)/';
 
@@ -230,7 +230,7 @@ class VarnishSocket
         }
 
         // Read content with length
-        return self::readChunks($response);
+        return $response;
     }
 
     /**
@@ -241,19 +241,26 @@ class VarnishSocket
     private function readChunks(array $response) {
         while (! feof($this->varnishSocket) && self::continueReading($response)) {
             $chunk = self::readSingleChunk();
+
+            // Check for socket timeout when an empty chunk is returned
             if (empty($chunk)) {
                 self::checkSocketTimeout();
             }
 
+            // No content length given, expecting code + content length response
             if ($response['length'] === null) {
                 // Varnish will output a code and a content length, followed by the actual content
-                if (preg_match('~^(\d{3}) (\d+)~', $chunk, $match)) {
+                if (preg_match(self::VARN_CONTROL_COMMAND_REGEX, $chunk, $match)) {
                     $response['code'] = (int) $match[1];
                     $response['length'] = (int) $match[2];
+
+                    // Read actual content with given length
+                    $response = self::readChunks($response);
                     break;
                 }
                 continue;
             }
+            // Append chunk to content
             $response['content'] .= $chunk;
         }
 
