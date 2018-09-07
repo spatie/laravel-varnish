@@ -239,17 +239,20 @@ class VarnishSocket
     }
 
     /**
+     * Determine whether we should continue to read from the Varnish socket
+     * - There is still data on the socket to read
+     * - We have not reached the given content length
+     *
      * @param VarnishResponse $response
      * @return bool
      */
     private function continueReading(VarnishResponse $response) {
-        return ! feof($this->varnishSocket) && (
-            $response->getLength() === null ||
-            strlen($response->getContent()) < $response->getLength()
-        );
+        return ! feof($this->varnishSocket) && ! $response->contentLengthReached();
     }
 
     /**
+     * Check if Varnish socket has timed out
+     *
      * @throws \Exception
      */
     private function checkSocketTimeout() {
@@ -262,6 +265,8 @@ class VarnishSocket
     }
 
     /**
+     * Read a single chunk from the Varnish socket
+     *
      * @return bool|string
      */
     private function readSingleChunk() {

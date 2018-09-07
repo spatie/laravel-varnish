@@ -134,4 +134,11 @@ class VarnishResponse
         }
         return false;
     }
+
+    /**
+     * @return bool
+     */
+    public function contentLengthReached() {
+        return ! ($this->getLength() === null || strlen($this->getContent()) < $this->getLength());
+    }
 }
