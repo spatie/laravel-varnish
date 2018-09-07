@@ -136,11 +136,12 @@ class Varnish
                 $this->getSecret()
             )) {
                 $socket->command($command);
+                $socket->quit();
             }
         } catch(\Exception $e) {
             return false;
         } finally {
-            $socket->quit();
+            $socket->close();
         }
 
         return true;
