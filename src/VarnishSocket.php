@@ -55,33 +55,7 @@ namespace Spatie\Varnish;
 
 class VarnishSocket
 {
-    /**
-     * Varnish return codes (from vcli.h)
-     * https://github.com/varnishcache/varnish-cache/blob/master/include/vcli.h#L42.
-     */
-    const VARN_SYNTAX = 100;
-    const VARN_UNKNOWN = 101;
-    const VARN_UNIMPL = 102;
-    const VARN_TOOFEW = 104;
-    const VARN_TOOMANY = 105;
-    const VARN_PARAM = 106;
-    const VARN_AUTH = 107;
-    const VARN_OK = 200;
-    const VARN_TRUNCATED = 201;
-    const VARN_CANT = 300;
-    const VARN_COMMS = 400;
-    const VARN_CLOSE = 500;
 
-    /**
-     * Authentication challenge length
-     */
-    const VARN_CHALLENGE_LENGTH = 32;
-
-    /**
-     * Varnish control command contains the status code and content length
-     * e.g. 107 59
-     */
-    const VARN_CONTROL_COMMAND_REGEX = '/^(\d{3}) (\d+)/';
 
     /**
      * The socket used to connect to Varnish and a timeout in seconds.
@@ -92,8 +66,8 @@ class VarnishSocket
     /**
      * Limits for reading and writing to and from the socket.
      */
-    const READ_CHUNK_SIZE = 1024;
-    const WRITE_MAX_SIZE = 16 * self::READ_CHUNK_SIZE;
+    const CHUNK_SIZE = 1024;
+    const WRITE_MAX_SIZE = 16 * self::CHUNK_SIZE;
 
     /**
      * Connect to the Varnish socket and authenticate when needed.
@@ -142,27 +116,24 @@ class VarnishSocket
      * @throws \Exception
      */
     private function authenticate($secret) {
-        // Read first data from socket
-        $data = $this->read();
+        // Read first response from socket
+        $response = $this->read();
 
         // Authenticate using secret if authentication is required
         // https://varnish-cache.org/docs/trunk/reference/varnish-cli.html#authentication-with-s
-        if ($data['code'] === self::VARN_AUTH) {
-            // The challenge is a random 32-character string
-            $challenge = substr($data['content'], 0, self::VARN_CHALLENGE_LENGTH);
-
+        if ($response->isAuthRequest()) {
             // Generate the authentication token based on the challenge and secret
-            $token = $this->calculateAuthToken($challenge, $secret);
+            $token = $this->calculateAuthToken($response->getAuthChallenge(), $secret);
 
             // Authenticate using token
-            $data = $this->command(
+            $response = $this->command(
                 sprintf('auth %s', $token)
             );
 
-            if ($data['code'] !== self::VARN_OK) {
+            if ($response->getCode() !== VarnishResponse::VARN_OK) {
                 throw new \Exception(sprintf(
                     'Varnish admin authentication failed: %s',
-                    $data['content']
+                    $response->getContent()
                 ));
             }
         }
@@ -175,7 +146,11 @@ class VarnishSocket
      */
     public function isConnected()
     {
-        return is_resource($this->varnishSocket);
+        if (is_resource($this->varnishSocket)) {
+            $meta = stream_get_meta_data($this->varnishSocket);
+            return ! ($meta['eof'] || $meta['timed_out']);
+        }
+        return false;
     }
 
     /**
@@ -206,7 +181,7 @@ class VarnishSocket
     }
 
     /**
-     * @return array|bool|string
+     * @return VarnishResponse
      *
      * @throws \Exception
      */
@@ -215,15 +190,12 @@ class VarnishSocket
         if (!$this->isConnected()) {
             throw new \Exception('Cannot read from Varnish socket because it\'s not connected');
         }
-        $response = [
-            'code' => null,
-            'length' => null,
-            'content' => ''
-        ];
-        $response = self::readChunks($response);
+
+        // Read data from socket
+        $response = self::readChunks();
 
         // Failed to get code from socket
-        if ($response['code'] === null) {
+        if ($response->getCode() === null) {
             throw new \Exception(
                 'Failed to read response code from Varnish socket'
             );
@@ -234,12 +206,15 @@ class VarnishSocket
     }
 
     /**
-     * @param array $response
-     * @return array
+     * @param VarnishResponse $response
+     * @return VarnishResponse
      * @throws \Exception
      */
-    private function readChunks(array $response) {
-        while (! feof($this->varnishSocket) && self::continueReading($response)) {
+    private function readChunks(VarnishResponse $response = null) {
+        if ($response === null) {
+            $response = new VarnishResponse();
+        }
+        while (self::continueReading($response)) {
             $chunk = self::readSingleChunk();
 
             // Check for socket timeout when an empty chunk is returned
@@ -247,32 +222,31 @@ class VarnishSocket
                 self::checkSocketTimeout();
             }
 
-            // No content length given, expecting code + content length response
-            if ($response['length'] === null) {
-                // Varnish will output a code and a content length, followed by the actual content
-                if (preg_match(self::VARN_CONTROL_COMMAND_REGEX, $chunk, $match)) {
-                    $response['code'] = (int) $match[1];
-                    $response['length'] = (int) $match[2];
-
-                    // Read actual content with given length
-                    $response = self::readChunks($response);
-                    break;
-                }
+            if ($response->getLength() !== null) {
+                // Append chunk to content
+                $response->appendContent($chunk);
                 continue;
             }
-            // Append chunk to content
-            $response['content'] .= $chunk;
+
+            // No content length given, expecting code + content length response
+            if ($response->parseControlCommand($chunk)) {
+                // Read actual content with given length
+                return self::readChunks($response);
+            }
         }
 
         return $response;
     }
 
     /**
-     * @param array $response
+     * @param VarnishResponse $response
      * @return bool
      */
-    private function continueReading(array $response) {
-        return $response['length'] === null || strlen($response['content']) < $response['length'];
+    private function continueReading(VarnishResponse $response) {
+        return ! feof($this->varnishSocket) && (
+            $response->getLength() === null ||
+            strlen($response->getContent()) < $response->getLength()
+        );
     }
 
     /**
@@ -291,7 +265,7 @@ class VarnishSocket
      * @return bool|string
      */
     private function readSingleChunk() {
-        return fgets($this->varnishSocket, self::READ_CHUNK_SIZE);
+        return fgets($this->varnishSocket, self::CHUNK_SIZE);
     }
 
     /**
@@ -331,20 +305,20 @@ class VarnishSocket
      * @param string $cmd
      * @param int $ok
      *
-     * @return array
+     * @return VarnishResponse
      *
      * @throws \Exception
      */
-    public function command($cmd, $ok = self::VARN_OK)
+    public function command($cmd, $ok = VarnishResponse::VARN_OK)
     {
         $response = $this->write($cmd)->read();
-        if ($response['code'] !== $ok) {
+        if ($response->getCode() !== $ok) {
             throw new \Exception(
                 sprintf(
                     "Command '%s' responded %d: '%s'",
-                    $cmd, $response['code'], $response['content']
+                    $cmd, $response->getCode(), $response->getContent()
                 ),
-                $response['code']
+                $response->getCode()
             );
         }
 
@@ -374,7 +348,7 @@ class VarnishSocket
     public function quit()
     {
         try {
-            $this->command('quit', self::VARN_CLOSE);
+            $this->command('quit', VarnishResponse::VARN_CLOSE);
         } finally {
             $this->close();
         }
