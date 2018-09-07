@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mathias
- * Date: 07/09/18
- * Time: 10:23
- */
 
 namespace Spatie\Varnish;
 
