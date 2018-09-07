@@ -55,8 +55,6 @@ namespace Spatie\Varnish;
 
 class VarnishSocket
 {
-
-
     /**
      * The socket used to connect to Varnish and a timeout in seconds.
      */
