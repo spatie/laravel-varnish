@@ -3,22 +3,43 @@
 namespace Spatie\Varnish;
 
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class Varnish
 {
+    /*
+     * Known exec types
+     */
+    const EXEC_SOCKET = 'socket';
+    const EXEC_COMMAND = 'command';
+
     /**
      * @param string|array $host
      *
-     * @return \Symfony\Component\Process\Process
+     * @return bool|null
+     *
+     * @throws \Exception
      */
-    public function flush($host = null): Process
+    public function flush($host = null): bool
     {
+        $config = config('varnish');
+
         $host = $this->getHosts($host);
+        $expr = $this->generateBanExpr($host);
 
-        $command = $this->generateBanCommand($host);
-
-        return $this->executeCommand($command);
+        // Default to execution_type command when the config parameter is not set
+        switch ($config['execution_type'] ?? self::EXEC_COMMAND) {
+            case self::EXEC_SOCKET:
+                return $this->executeSocketCommand($expr);
+                break;
+            case self::EXEC_COMMAND:
+                $command = $this->generateBanCommand($expr);
+                return $this->executeCommand($command);
+                break;
+            default:
+                throw new \Exception(sprintf(
+                    'Unknown execution type: %s', $config['execution_type']
+                ));
+        }
     }
 
     /**
@@ -37,7 +58,24 @@ class Varnish
         return $host;
     }
 
-    public function generateBanCommand(array $hosts): string
+    /**
+     * @param string $expr
+     *
+     * @return string
+     */
+    public function generateBanCommand($expr = ''): string
+    {
+        $config = config('varnish');
+
+        return "sudo varnishadm -S {$config['administrative_secret']} -T 127.0.0.1:{$config['administrative_port']} '{$expr}'";
+    }
+
+    /**
+     * @param array $hosts
+     *
+     * @return string
+     */
+    public function generateBanExpr(array $hosts): string
     {
         $hostsRegex = collect($hosts)
             ->map(function (string $host) {
@@ -45,21 +83,67 @@ class Varnish
             })
             ->implode('|');
 
-        $config = config('varnish');
-
-        return "sudo varnishadm -S {$config['administrative_secret']} -T 127.0.0.1:{$config['administrative_port']} 'ban req.http.host ~ {$hostsRegex}'";
+        return sprintf('ban req.http.host ~ %s', $hostsRegex);
     }
 
-    protected function executeCommand(string $command): Process
+    /**
+     * @return string
+     */
+    public function getSecret()
     {
-        $process = new Process($command);
-
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+        $config = config('varnish');
+        if (! $secret = $config['administrative_secret_string']) {
+            $secret = '';
+            if (file_exists($config['administrative_secret'])) {
+                $secret = trim(file_get_contents($config['administrative_secret']));
+            }
         }
 
-        return $process;
+        return $secret;
+    }
+
+    /**
+     * @param string $command
+     *
+     * @return bool
+     *
+     * @throws \Exception When the command fails
+     */
+    protected function executeCommand(string $command): bool
+    {
+        $process = new Process($command);
+        $process->run();
+
+        return $process->isSuccessful();
+    }
+
+    /**
+     * @param string $command
+     *
+     * @return bool
+     *
+     * @throws \Exception When connection to socket or command failed
+     */
+    protected function executeSocketCommand(string $command): bool
+    {
+        $config = config('varnish');
+        $socket = new VarnishSocket();
+
+        try {
+            if ($socket->connect(
+                $config['administrative_host'],
+                $config['administrative_port'],
+                $this->getSecret()
+            )) {
+                $socket->command($command);
+                $socket->quit();
+            }
+        } catch(\Exception $e) {
+            return false;
+        } finally {
+            $socket->close();
+        }
+
+        return true;
     }
 }

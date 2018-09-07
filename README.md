@@ -37,14 +37,39 @@ This is the contents of the published file:
 ```php
 return [
     /*
-     * The hostname this Laravel app is listening to.
+     * The hostname(s) this Laravel app is listening to.
      */
-    'host' => 'example.com',
+    'host' => ['example.com'],
+
+    /*
+     * The execution type to be used. Allowed values are 'command' or 'socket'.
+     *
+     * This will determine whether `varnishadm` or the varnish administrative socket
+     * is used for a local or remote varnish instance, respectively.
+     */
+    'execution_type' => 'command',
 
     /*
      * The location of the file containing the administrative password.
      */
     'administrative_secret' => '/etc/varnish/secret',
+
+    /*
+     * The actual administrative password used in your varnish configuration.
+     *
+     * When using `execution_type` 'command', use `administrative_secret`
+     * instead, as `varnishadm` expects the secret to be a file path.
+     *
+     * If you are using `execution_type` 'socket', both parameters are supported, but
+     * `administrative_secret_string` will take precedence over `administrative_secret`.
+     */
+    'administrative_secret_string' => '',
+
+    /*
+     * The host where the administrative tasks may be sent to when
+     * using execution_type 'socket'.
+     */
+    'administrative_host' => '127.0.0.1',
 
     /*
      * The port where the administrative tasks may be sent to.
@@ -65,6 +90,13 @@ return [
 ```
 
 In the published `varnish.php` config file you should set the `host` key to the right value.
+Also make sure that the `execution_type` is set to **socket** if you would like to use this command
+to flush the cache of a remote Varnish server. Set `execution_type` to **command** to use `varnishadm`
+on the local system.
+
+In case you've set the `execution_type` to **socket**, you can either store the administrative secret
+in a file and set `administrative_secret`, as used by `varnishadm`, or provide the actual
+secret string in the `administrative_secret_string` variable.
 
 Add the `Spatie\Varnish\Middleware\CacheWithVarnish` middleware to the route middlewares.
 
@@ -133,7 +165,9 @@ There's an artisan command to flush the cache. This can come in handy in your de
 php artisan varnish:flush
 ```
 
-Under the hood flushing the cache will call the `sudo varnishadm`. To make it work without any hassle make sure the command is run by a unix user that has `sudo` rights.
+If `execution_type` is set to **command**, under the hood flushing the cache will call the
+`sudo varnishadm`. To make it work without any hassle make sure the command is run by
+a unix user that has `sudo` rights.
 
 You can also do this in your code to flush the cache:
 
