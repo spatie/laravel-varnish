@@ -201,7 +201,6 @@ class VarnishSocket
             );
         }
 
-        // Read content with length
         return $response;
     }
 
@@ -214,16 +213,12 @@ class VarnishSocket
         if ($response === null) {
             $response = new VarnishResponse();
         }
+
         while (self::continueReading($response)) {
             $chunk = self::readSingleChunk();
 
-            // Check for socket timeout when an empty chunk is returned
-            if (empty($chunk)) {
-                self::checkSocketTimeout();
-            }
-
-            if ($response->getLength() !== null) {
-                // Append chunk to content
+            // Given content length
+            if ($response->hasLength()) {
                 $response->appendContent($chunk);
                 continue;
             }
@@ -247,7 +242,7 @@ class VarnishSocket
      * @return bool
      */
     private function continueReading(VarnishResponse $response) {
-        return ! feof($this->varnishSocket) && ! $response->contentLengthReached();
+        return ! feof($this->varnishSocket) && ! $response->finishedReading();
     }
 
     /**
@@ -268,9 +263,17 @@ class VarnishSocket
      * Read a single chunk from the Varnish socket
      *
      * @return bool|string
+     * @throws \Exception
      */
     private function readSingleChunk() {
-        return fgets($this->varnishSocket, self::CHUNK_SIZE);
+        $chunk = fgets($this->varnishSocket, self::CHUNK_SIZE);
+
+        // Check for socket timeout when an empty chunk is returned
+        if (empty($chunk)) {
+            self::checkSocketTimeout();
+        }
+
+        return $chunk;
     }
 
     /**
@@ -300,7 +303,6 @@ class VarnishSocket
         if ($bytes !== strlen($data)) {
             throw new \Exception('Failed to write to Varnish socket');
         }
-
         return $this;
     }
 
@@ -326,7 +328,6 @@ class VarnishSocket
                 $response->getCode()
             );
         }
-
         return $response;
     }
 

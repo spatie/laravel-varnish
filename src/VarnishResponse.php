@@ -138,7 +138,21 @@ class VarnishResponse
     /**
      * @return bool
      */
+    public function hasLength() {
+        return $this->getLength() !== null;
+    }
+
+    /**
+     * @return bool
+     */
     public function contentLengthReached() {
-        return ! ($this->getLength() === null || strlen($this->getContent()) < $this->getLength());
+        return strlen($this->getContent()) >= $this->getLength();
+    }
+
+    /*
+     * @return bool
+     */
+    public function finishedReading() {
+        return $this->hasLength() && $this->contentLengthReached();
     }
 }
