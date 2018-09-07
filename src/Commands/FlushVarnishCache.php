@@ -34,6 +34,7 @@ class FlushVarnishCache extends Command
         try {
             if ((new Varnish())->flush()) {
                 $this->comment($success_msg);
+                return true;
             } else {
                 $this->error($error_msg);
             }
@@ -41,7 +42,6 @@ class FlushVarnishCache extends Command
             $this->error($error_msg);
             $this->error($exception->getMessage());
         }
-
-        return true;
+        return false;
     }
 }
