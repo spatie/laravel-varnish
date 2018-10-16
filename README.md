@@ -120,7 +120,7 @@ The amount of minutes that Varnish should cache this content can be configured i
 // Varnish will cache the responses of the routes inside the group for 15 minutes
 Route::group(['middleware' => 'cacheable:15'], function() {
    ...
-)};
+});
 ```
 
 Behind the scenes the middleware will add an `X-Cacheable` and `Cache-Control` to the response. Varnish will remove all cookies from Laravel's response. So keep in mind that, because the`laravel_session` cookie will be removed as well, sessions will not work on routes were the `CacheWithVarnish` middleware is applied.
