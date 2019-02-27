@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.1.2 - 2019-02-27
+
+- add support for Laravel 5.8
+
 ## 2.1.1 - 2018-08-29
 
 - add support for Laravel 5.7
