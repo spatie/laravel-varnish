@@ -14,12 +14,22 @@ class FlushVarnishCache extends Command
      */
     protected $signature = 'varnish:flush';
 
+    
+    private $varnish;
+    
     /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Flush the varnish cache.';
+    
+    public function __construct(Varnish $varnish)
+    {
+        $this->varnish = $varnish;
+        
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
@@ -28,7 +38,7 @@ class FlushVarnishCache extends Command
      */
     public function handle()
     {
-        (new Varnish())->flush();
+        $this->varnish->flush();
 
         $this->comment('The varnish cache has been flushed!');
     }
