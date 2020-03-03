@@ -2,8 +2,8 @@
 
 namespace Spatie\Varnish\Test;
 
-use Spatie\Varnish\VarnishServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\Varnish\VarnishServiceProvider;
 
 class TestCase extends Orchestra
 {
