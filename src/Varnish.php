@@ -54,7 +54,7 @@ class Varnish
         $config = config('varnish');
 
         $urlRegex = '';
-        if(! empty($url)) {
+        if (! empty($url)) {
             $urlRegex = " && req.url ~ {$url}";
         }
 
