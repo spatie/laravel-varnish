@@ -12,14 +12,14 @@ class FlushVarnishCache extends Command
      *
      * @var string
      */
-    protected $signature = 'varnish:flush';
+    protected $signature = 'varnish:flush {url?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Flush the varnish cache.';
+    protected $description = 'Flush the varnish cache. Optionally you can provide a regex of an url you want to flush, e.g. /nl/*.';
 
     /**
      * Execute the console command.
@@ -28,7 +28,9 @@ class FlushVarnishCache extends Command
      */
     public function handle()
     {
-        (new Varnish())->flush();
+        $url = $this->argument('url');
+
+        (new Varnish())->flush(null, $url);
 
         $this->comment('The varnish cache has been flushed!');
     }
