@@ -57,5 +57,4 @@ class VarnishTest extends TestCase
             'example2.com',
         ], '/nl/*'));
     }
-
 }
