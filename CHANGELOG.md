@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.8.0 - 2020-03-11
+
+- add logic to pass in a URL to the varnish:flush command to purge a host + url with a regex (#42)
+
 ## 2.7.0 - 2020-03-03
 
 - add support for Laravel 7
