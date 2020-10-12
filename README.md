@@ -8,7 +8,7 @@ This package provides an easy way to work with Varnish 4 (or 5) in Laravel. It p
 
 ## Support us
 
-[![Image](https://github-ads.s3.eu-central-1.amazonaws.com/laravel-varnish.jpg)](https://spatie.be/github-ad-click/laravel-varnish)
+[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-varnish.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-varnish)
 
 We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
 
