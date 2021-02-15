@@ -14,7 +14,12 @@ class FlushVarnishCache extends Command
      */
     protected $signature = 'varnish:flush {url?}';
 
-    private $varnish;
+    /**
+     * The Varnish instance.
+     *
+     * @var object
+     */
+    protected $varnish;
 
     /**
      * The console command description.
@@ -22,13 +27,6 @@ class FlushVarnishCache extends Command
      * @var string
      */
     protected $description = 'Flush the varnish cache. Optionally you can provide a regex of an url you want to flush, e.g. /nl/*.';
-
-    public function __construct(Varnish $varnish)
-    {
-        $this->varnish = $varnish;
-
-        parent::__construct();
-    }
 
     /**
      * Execute the console command.
@@ -38,6 +36,7 @@ class FlushVarnishCache extends Command
     public function handle()
     {
         $url = $this->argument('url');
+        $this->varnish = app(Varnish::class);
 
         $this->varnish->flush(null, $url);
 
