@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.8.2 - 2021-03-04
+
+- add compatibility for PHP 8 (#52)
+
 ## 2.8.1 - 2020-09-09
 
 - Support Laravel 8
