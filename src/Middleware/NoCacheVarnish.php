@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Spatie\Varnish\Middleware;
 
 use Closure;
 
