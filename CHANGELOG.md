@@ -2,6 +2,20 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.8.3 - 2022-01-28
+
+## What's Changed
+
+- Add PHP 8.1 Support by @patinthehat in https://github.com/spatie/laravel-varnish/pull/54
+- s-maxage is the correct header by @dvershinin in https://github.com/spatie/laravel-varnish/pull/56
+
+## New Contributors
+
+- @patinthehat made their first contribution in https://github.com/spatie/laravel-varnish/pull/54
+- @dvershinin made their first contribution in https://github.com/spatie/laravel-varnish/pull/56
+
+**Full Changelog**: https://github.com/spatie/laravel-varnish/compare/2.8.2...2.8.3
+
 ## 2.8.2 - 2021-03-04
 
 - add compatibility for PHP 8 (#52)
