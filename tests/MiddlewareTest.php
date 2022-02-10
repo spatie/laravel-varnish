@@ -14,7 +14,7 @@ class MiddlewareTest extends TestCase
 
         $this->get('/cache-me')
             ->assertHeader('X-Cacheable', '1')
-            ->assertHeader('Cache-Control', 'max-age=86400, public');
+            ->assertHeader('Cache-Control', 'public, s-maxage=86400');
     }
 
     /** @test */
@@ -26,7 +26,7 @@ class MiddlewareTest extends TestCase
 
         $this->get('/cache-me')
             ->assertHeader('X-My-Custom-Header', '1')
-            ->assertHeader('Cache-Control', 'max-age=86400, public');
+            ->assertHeader('Cache-Control', 'public, s-maxage=86400');
     }
 
     /** @test */
@@ -38,7 +38,7 @@ class MiddlewareTest extends TestCase
 
         $this->get('/cache-me')
             ->assertHeader('X-Cacheable', '1')
-            ->assertHeader('Cache-Control', 'max-age=300, public');
+            ->assertHeader('Cache-Control', 'public, s-maxage=300');
     }
 
     /** @test */
@@ -48,7 +48,7 @@ class MiddlewareTest extends TestCase
 
         $this->get('/cache-me')
             ->assertHeader('X-Cacheable', '1')
-            ->assertHeader('Cache-Control', 'max-age=600, public');
+            ->assertHeader('Cache-Control', 'public, s-maxage=600');
     }
 
     private function getRoute()
