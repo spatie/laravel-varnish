@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.9.0 - 2022-02-10
+
+- allow Laravel 9
+
 ## 2.8.3 - 2022-01-28
 
 ## What's Changed
