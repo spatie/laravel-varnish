@@ -19,7 +19,7 @@ We highly appreciate you sending us a postcard from your hometown, mentioning wh
 
 ## Installation
 
-We assume that you've already installed Varnish on your server. If not read [this blogpost](https://murze.be/2017/01/varnish-on-a-laravel-forge-server/) to learn how to install it.
+We assume that you've already installed Varnish on your server. If not read [this blogpost](https://freek.dev/2017/01/varnish-on-a-laravel-forge-server/) to learn how to install it.
 
 
 You can install the package via composer:
