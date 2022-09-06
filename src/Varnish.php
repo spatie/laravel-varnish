@@ -63,7 +63,7 @@ class Varnish
 
     protected function executeCommand(string $command): Process
     {
-        $process = new Process($command);
+        $process = new Process([$command]);
 
         $process->run();
 
