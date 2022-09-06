@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.9.1 - 2022-09-06
+
+### What's Changed
+
+- Changed initialization of Symfony\Component\Process\Process class  by @NightfallSD in https://github.com/spatie/laravel-varnish/pull/60
+
+### New Contributors
+
+- @NightfallSD made their first contribution in https://github.com/spatie/laravel-varnish/pull/60
+
+**Full Changelog**: https://github.com/spatie/laravel-varnish/compare/2.9.0...2.9.1
+
 ## 2.9.0 - 2022-02-10
 
 - allow Laravel 9
