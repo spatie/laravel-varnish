@@ -21,8 +21,9 @@
         "illuminate/http": "^8.73|^9.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "orchestra/testbench": "^6.23|^7.0"
+        "orchestra/testbench": "^6.23|^7.0",
+        "pestphp/pest": "^1.22",
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
@@ -38,7 +39,10 @@
         "test": "vendor/bin/phpunit"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "extra": {
         "laravel": {
