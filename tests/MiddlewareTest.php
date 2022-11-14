@@ -1,7 +1,5 @@
 <?php
 
-namespace Spatie\Varnish\Test;
-
 use Illuminate\Support\Facades\Route;
 use Spatie\Varnish\Middleware\CacheWithVarnish;
 
