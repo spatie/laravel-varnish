@@ -1,60 +1,47 @@
 <?php
 
-namespace Spatie\Varnish\Test;
-
 use Spatie\Varnish\Varnish;
 
-class VarnishTest extends TestCase
-{
-    /** @test */
-    public function it_can_generate_a_ban_command_for_a_single_host()
-    {
-        $expectedCommand = "sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ (^example.com$)'";
+it('can generate a ban command for a single host')
+    ->expect(fn () => (new Varnish())->generateBanCommand(['example.com']))
+    ->toEqual("sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ (^example.com$)'");
 
-        $this->assertEquals($expectedCommand, (new Varnish())->generateBanCommand(['example.com']));
-    }
+it('can generate a band command with a custom secret location and port', function () {
+    $secret = '/etc/custom/secret';
+    $port = 1234;
 
-    /** @test */
-    public function it_can_generate_a_band_command_with_a_custom_secret_location_and_port()
-    {
-        $secret = '/etc/custom/secret';
-        $port = 1234;
+    config()->set('varnish.administrative_secret', $secret);
+    config()->set('varnish.administrative_port', $port);
 
-        $this->app['config']->set('varnish.administrative_secret', $secret);
-        $this->app['config']->set('varnish.administrative_port', $port);
+    $expectedCommand = "sudo varnishadm -S {$secret} -T 127.0.0.1:{$port} 'ban req.http.host ~ (^example.com$)'";
 
-        $expectedCommand = "sudo varnishadm -S {$secret} -T 127.0.0.1:{$port} 'ban req.http.host ~ (^example.com$)'";
+    expect(
+        (new Varnish())->generateBanCommand(['example.com'])
+    )->toEqual($expectedCommand);
+});
 
-        $this->assertEquals($expectedCommand, (new Varnish())->generateBanCommand(['example.com']));
-    }
+it('can generate a ban command for multiple hosts', function () {
+    $expectedCommand = "sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ (^example.com$)|(^example2.com$)'";
 
-    /** @test */
-    public function it_can_generate_a_ban_command_for_multiple_hosts()
-    {
-        $expectedCommand = "sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ (^example.com$)|(^example2.com$)'";
-
-        $this->assertEquals($expectedCommand, (new Varnish())->generateBanCommand([
+    expect(
+        (new Varnish())->generateBanCommand([
             'example.com',
             'example2.com',
-        ]));
-    }
+        ])
+    )->toEqual($expectedCommand);
+});
 
-    /** @test */
-    public function it_can_generate_a_ban_command_for_a_single_host_and_a_specific_url()
-    {
-        $expectedCommand = "sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ (^example.com$) && req.url ~ /nl/*'";
+it('can generate a ban command for a single host and a specific url')
+    ->expect(fn () => (new Varnish())->generateBanCommand(['example.com'], '/nl/*'))
+    ->toEqual("sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ (^example.com$) && req.url ~ /nl/*'");
 
-        $this->assertEquals($expectedCommand, (new Varnish())->generateBanCommand(['example.com'], '/nl/*'));
-    }
+it('can generate a ban command for multiple hosts and a specific url', function () {
+    $expectedCommand = "sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ (^example.com$)|(^example2.com$) && req.url ~ /nl/*'";
 
-    /** @test */
-    public function it_can_generate_a_ban_command_for_multiple_hosts_and_a_specific_url()
-    {
-        $expectedCommand = "sudo varnishadm -S /etc/varnish/secret -T 127.0.0.1:6082 'ban req.http.host ~ (^example.com$)|(^example2.com$) && req.url ~ /nl/*'";
-
-        $this->assertEquals($expectedCommand, (new Varnish())->generateBanCommand([
+    expect(
+        (new Varnish())->generateBanCommand([
             'example.com',
             'example2.com',
-        ], '/nl/*'));
-    }
-}
+        ], '/nl/*')
+    )->toEqual($expectedCommand);
+});
