@@ -2,6 +2,22 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.9.2 - 2023-01-31
+
+### What's Changed
+
+- update: broken link for varnish setup blog post by @abhij89 in https://github.com/spatie/laravel-varnish/pull/61
+- Refactor tests to Pest by @alexmanase in https://github.com/spatie/laravel-varnish/pull/62
+- Laravel 10.x Compatibility by @laravel-shift in https://github.com/spatie/laravel-varnish/pull/64
+
+### New Contributors
+
+- @abhij89 made their first contribution in https://github.com/spatie/laravel-varnish/pull/61
+- @alexmanase made their first contribution in https://github.com/spatie/laravel-varnish/pull/62
+- @laravel-shift made their first contribution in https://github.com/spatie/laravel-varnish/pull/64
+
+**Full Changelog**: https://github.com/spatie/laravel-varnish/compare/2.9.1...2.9.2
+
 ## 2.9.1 - 2022-09-06
 
 ### What's Changed
