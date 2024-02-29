@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.10.0 - 2024-02-29
+
+### What's Changed
+
+* Laravel 11.x Compatibility by @laravel-shift in https://github.com/spatie/laravel-varnish/pull/69
+
+**Full Changelog**: https://github.com/spatie/laravel-varnish/compare/2.9.2...2.10.0
+
 ## 2.9.2 - 2023-01-31
 
 ### What's Changed
