@@ -1,7 +1,7 @@
 # Making Varnish and Laravel play nice together
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-varnish.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-varnish)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/spatie/laravel-varnish/run-tests?label=tests)
+[![run-tests](https://github.com/spatie/laravel-varnish/actions/workflows/run-tests.yml/badge.svg)](https://github.com/spatie/laravel-varnish/actions/workflows/run-tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-varnish.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-varnish)
 
 This package provides an easy way to work with Varnish 4 (or 5) in Laravel. It provides a route middleware that, when applied to a route, will make sure Varnish will cache the response no matter what. The package also contains a function to flush the Varnish cache from within the application.
