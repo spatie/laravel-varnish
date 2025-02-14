@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-varnish` will be documented in this file
 
+## 2.10.1 - 2025-02-14
+
+### What's Changed
+
+* use setSharedMaxAge function by @indykoning in https://github.com/spatie/laravel-varnish/pull/71
+
+### New Contributors
+
+* @indykoning made their first contribution in https://github.com/spatie/laravel-varnish/pull/71
+
+**Full Changelog**: https://github.com/spatie/laravel-varnish/compare/2.10.0...2.10.1
+
 ## 2.10.0 - 2024-02-29
 
 ### What's Changed
