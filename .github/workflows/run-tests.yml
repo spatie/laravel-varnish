@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         php: [7.4, 8.0, 8.1, '8.2']
-        laravel: ['8.*', '9.*', '10.*', '11.*']
+        laravel: ['8.*', '9.*', '10.*', '11.*', '12.*']
         dependency-version: [prefer-lowest, prefer-stable]
         include:
           - laravel: 10.*
@@ -24,6 +24,8 @@ jobs:
             testbench: ^6.23
           - laravel: 11.*
             testbench: 9.*
+          - laravel: 12.*
+            testbench: 10.*
         exclude:
           - laravel: 10.*
             php: 8.0
@@ -37,18 +39,18 @@ jobs:
             php: 8.0
           - laravel: 11.*
             php: 8.1
+          - laravel: 12.*
+            php: 7.4
+          - laravel: 12.*
+            php: 8.0
+          - laravel: 12.*
+            php: 8.1
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.composer/cache/files
-          key: dependencies-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
